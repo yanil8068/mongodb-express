@@ -2,6 +2,17 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const path = require("path");
+const Chat = require("./models/chat.js");
+
+let chat1 = new Chat({
+    from: "neha",
+    to: "priya",
+    msg: "send me your exam sheets",
+    created_at: new Date(),
+});
+chat1.save().then((res)=>{
+    console.log(res);
+});
 
 
 main().then(() => {
