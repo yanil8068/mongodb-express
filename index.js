@@ -3,6 +3,7 @@ const app = express();
 const mongoose = require("mongoose");
 const path = require("path");
 const Chat = require("./models/chat.js");
+const methodOverride = require("method-override");
 
 main().then(() => {
     console.log("connection successful");
@@ -18,10 +19,15 @@ app.listen(8080, ()=>{
 
 app.use(express.static(path.join(__dirname,"public")));
 
+app.use(methodOverride("_method"));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // index route
 app.get("/chats", async(req, res)=>{
     let chats = await Chat.find();
-    console.log(chats);
+    // console.log(chats);
     res.render("index.ejs",{chats});
 });
 
@@ -30,6 +36,18 @@ app.get("/chats/new", (req, res)=>{
    
     res.render("new.ejs");
 });
+
+// Update Route
+app.put("/chats/:id", async(req, res)=>{
+    let { id } = req.params;
+   
+    let { msg: newMsg }= req.body;
+    console.log(newMsg);
+  
+     let updatedChat = await Chat.findByIdAndUpdate(id, { msg: newMsg }, { runValidators: true, new:true});
+    
+    res.redirect("/chats");
+})
 
 app.get("/", (req, res)=>{
     res.send("root is working");
